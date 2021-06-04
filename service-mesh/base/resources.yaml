@@ -13,8 +13,17 @@ spec:
   releaseName: istio-operator
   targetNamespace: istio-system
   values:
+    revision: "1-9-1"
     operatorNamespace: istio-operator
     watchedNamespaces: istio-system,istio-gateway  # namespace list seperated with comma
+    operator:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi
   wait: true
 ---
 apiVersion: helm.fluxcd.io/v1

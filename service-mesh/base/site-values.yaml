@@ -2,8 +2,15 @@ apiVersion: openinfradev.github.com/v1
 kind: HelmValuesTransformer
 metadata:
   name: site
-
 charts:
+- name: istio-operator
+  override:
+    revision: "1-9-1"
+    operator.resources.limits.cpu: 200m
+    operator.resources.limits.memory: 256Mi
+    operator.resources.requests.cpu: 50m
+    operator.resources.requests.memory: 128Mi
+
 - name: jaeger-operator
   override:
     jaeger.spec.storage.options.es:
