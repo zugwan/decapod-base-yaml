@@ -1,0 +1,31 @@
+name: Sync Gitea mirror repositories
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: argo cli
+        run: |
+          curl -sLO https://github.com/argoproj/argo-workflows/releases/download/v3.4.4/argo-linux-amd64.gz
+          gunzip argo-linux-amd64.gz
+          chmod +x argo-linux-amd64
+          mv ./argo-linux-amd64 /usr/local/bin/argo
+          argo version
+      
+      - name: run sync mirror workflow
+        run: |
+          run_gitea_sync_workflow () {
+            echo $1 | base64 -d > /tmp/kubeconfig
+            export KUBECONFIG=/tmp/kubeconfig
+            argo submit -n argo --from wftmpl/tks-gitea-sync-mirror --watch
+          }
+
+          run_gitea_sync_workflow ${{ secrets.DEV_KUBE }}
+          run_gitea_sync_workflow ${{ secrets.CICD_KUBE }}
